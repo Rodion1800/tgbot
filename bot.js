@@ -91,5 +91,4 @@ bot.on("message", async (ctx) => {
   }
 });
 
-// Запуск бота
 bot.launch();
