@@ -1,57 +1,48 @@
-import { getETH } from "./request.js";
+import { getPrice, dataToken } from "./request.js";
 
-export async function comparePriceETH(requestedPrice, chatId, bot) {
-  const currentPrice = await getETH();
-  console.log(`Current price: ${currentPrice}`);
+let alertPull = [];
+
+export async function setAlert(requestedPrice, coinSymbol, chatId, bot) {
+  const currentPrice = await getPrice(coinSymbol);
 
   if (requestedPrice > currentPrice) {
-    console.log(
-      `Requsted price (${requestedPrice}) bigger than (${currentPrice})`
-    );
-    await monitorPriceETH(requestedPrice, "above", chatId, bot);
+    await monitorPrice(requestedPrice, coinSymbol, chatId, bot, "above");
   } else if (requestedPrice < currentPrice) {
-    console.log(
-      `Requsted price (${requestedPrice}) less than (${currentPrice})`
-    );
-    await monitorPriceETH(requestedPrice, "below", chatId, bot);
-  } else {
-    console.log(`Requsted price is equal to ${currentPrice}`);
+    await monitorPrice(requestedPrice, coinSymbol, chatId, bot, "below");
   }
 }
 
-async function monitorPriceETH(requestedPrice, direction, chatId, bot) {
+async function monitorPrice(
+  requestedPrice,
+  coinSymbol,
+  chatId,
+  bot,
+  direction
+) {
   const checkPrice = async () => {
-    const currentPrice = await getETH();
-    console.log(`Price now: ${currentPrice}`);
+    const currentPrice = await getPrice(coinSymbol);
 
     if (direction === "above" && currentPrice >= requestedPrice) {
       const message = `Price reached: ${requestedPrice}, current price: ${currentPrice}`;
-      console.log(message);
       bot.telegram.sendMessage(chatId, message);
 
       clearInterval(priceInterval);
     } else if (direction === "below" && currentPrice <= requestedPrice) {
       const message = `Price reached: ${requestedPrice}, current price: ${currentPrice}`;
-      console.log(message);
       bot.telegram.sendMessage(chatId, message);
       clearInterval(priceInterval);
-    } else {
-      console.log(
-        `Requsted price ${requestedPrice} not reached yet. Current price: ${currentPrice}`
-      );
     }
   };
 
-  const priceInterval = setInterval(checkPrice, 10000);
-  await checkPrice();
+  const priceInterval = setInterval(checkPrice, 5000);
+  alertPull.push({ chatId, intervalId: priceInterval });
 }
+export function clearAlertInterval(chatId) {
+  alertPull.forEach((item) => {
+    if (item.chatId === chatId) {
+      clearInterval(item.intervalId);
+    }
+  });
 
-export function cancelPriceAlert() {
-  if (priceInterval) {
-    clearInterval(priceInterval);
-    ctx.reply("Price alert has been canceled.");
-    priceInterval = null;
-  } else {
-    ctx.reply("No active price alert to cancel.");
-  }
+  alertPull = alertPull.filter((item) => item.chatId !== chatId);
 }

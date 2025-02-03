@@ -44,3 +44,5 @@ async function monitorPriceBTC(requestedPrice, direction, chatId, bot) {
   const priceInterval = setInterval(checkPrice, 10000);
   await checkPrice();
 }
+
+

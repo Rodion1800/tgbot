@@ -2,9 +2,9 @@
   "name": "tgbot",
   "version": "1.0.0",
   "description": "",
-  "main": "bot.js",
+  "main": "bot2.js",
   "scripts": {
-    "start": "nodemon bot.js"
+    "start": "nodemon bot2.js"
   },
   "keywords": [],
   "author": "",

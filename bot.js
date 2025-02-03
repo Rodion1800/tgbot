@@ -2,7 +2,7 @@ import { Telegraf } from "telegraf";
 import { config } from "./config.js";
 import { getBTC, getETH } from "./request.js";
 import { keyboard, removeKeyboard } from "telegraf/markup";
-import { comparePriceETH, cancelPriceAlert } from "./alertETH.js";
+import { comparePriceETH } from "./alertETH.js";
 import { session } from "telegraf/session";
 import { comparePriceBTC } from "./alertBTC.js";
 const bot = new Telegraf(config.telegramToken, {});
@@ -44,10 +44,6 @@ bot.on("message", async (ctx) => {
     ctx.session.isSetAlert = false;
   }
 
-  if (ctx.message.text === "Cancel Alert") {
-    const cancelAlert = cancelPriceAlert();
-    ctx.reply(`Alert is canceled${cancelAlert}`);
-  }
   if (ctx.message.text === "Menu") {
     showMenu(bot, chatId);
   } else if (ctx.message.text === "Get BTC price") {
@@ -61,7 +57,7 @@ bot.on("message", async (ctx) => {
     ctx.session.isSetAlert = "BTC";
   } else if (ctx.session.isSetAlert === "BTC") {
     const price = parseFloat(ctx.message.text);
-    if (isNaN(price)) {
+    if (isNaN(price) || price <= 0) {
       ctx.reply("Please enter a valid number for the price.");
     } else {
       ctx.session.targetPrice = price;
@@ -75,7 +71,7 @@ bot.on("message", async (ctx) => {
     ctx.session.isSetAlert = "ETH";
   } else if (ctx.session.isSetAlert === "ETH") {
     const price = parseFloat(ctx.message.text);
-    if (isNaN(price)) {
+    if (isNaN(price) || price <= 0) {
       ctx.reply("Please enter a valid number for the price.");
     } else {
       ctx.session.targetPrice = price;
