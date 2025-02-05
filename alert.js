@@ -1,5 +1,6 @@
-import { getPrice, dataToken } from "./request.js";
+import { getPrice } from "./request.js";
 import { historyPull } from "./history.js";
+
 let alertPull = [];
 
 export async function setAlert(requestedPrice, coinSymbol, chatId, bot) {
@@ -30,6 +31,7 @@ async function monitorPrice(
     } else if (direction === "below" && currentPrice <= requestedPrice) {
       const message = `Price reached: ${requestedPrice}, current price: ${currentPrice}`;
       bot.telegram.sendMessage(chatId, message);
+
       clearInterval(priceInterval);
     }
   };

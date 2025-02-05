@@ -8,7 +8,7 @@ export function getHistory(bot, chatId) {
         const message = `Your history: 
       Token: ${item.itemSymbol} 
       Requsted Price: ${item.itemPrice} USDT 
-      Created time: ${item.time}`;
+      Created time(UTC): ${item.time}`;
         bot.telegram.sendMessage(chatId, message);
       }
     });
