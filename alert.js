@@ -1,5 +1,5 @@
 import { getPrice, dataToken } from "./request.js";
-
+import { historyPull } from "./history.js";
 let alertPull = [];
 
 export async function setAlert(requestedPrice, coinSymbol, chatId, bot) {
@@ -35,7 +35,20 @@ async function monitorPrice(
   };
 
   const priceInterval = setInterval(checkPrice, 5000);
-  alertPull.push({ chatId, intervalId: priceInterval });
+  alertPull.push({
+    chatId,
+    intervalId: priceInterval,
+    itemSymbol: coinSymbol,
+    itemPrice: requestedPrice,
+  });
+
+  historyPull.push({
+    chatId,
+    itemSymbol: coinSymbol,
+    itemPrice: requestedPrice,
+
+    time: new Date().toISOString().split(".")[0].replace("T", " "),
+  });
 }
 export function clearAlertInterval(chatId) {
   alertPull.forEach((item) => {
