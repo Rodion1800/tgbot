@@ -9,6 +9,8 @@ import { session } from "telegraf/session";
 
 export const bot = new Telegraf(config.telegramToken, {});
 
+bot.use(session());
+bot.use(stages.middleware());
 bot.start((ctx) =>
   ctx.reply("Welcome! Please choose an option.", {
     reply_markup: {
@@ -58,8 +60,5 @@ bot.hears("Get History", (ctx) => {
 bot.hears("Get price", (ctx) => ctx.scene.enter("getPrice"));
 bot.hears("Set Alert", (ctx) => ctx.scene.enter("setAlert"));
 bot.on("inline_query", getInlinePrice);
-
-bot.use(session());
-bot.use(stages.middleware());
 
 bot.launch();
